@@ -1,0 +1,19 @@
+version: '3.3'
+services:
+  web:
+    build: ./frontend
+    ports:
+      - 3000:3000
+    volumes:
+      - ./frontend/src/:/app/src/
+      - ./frontend/public/:/app/public/
+
+  api:
+    build: ./backend
+    command: python manage.py runserver 0.0.0.0:8000
+    ports:
+      - 8000:8000
+    volumes:
+      - ./backend/app/:/app/app/
+      - ./backend/core/:/app/core/
+      - ./backend/migrations/:/app/migrations/

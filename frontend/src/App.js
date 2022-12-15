@@ -21,6 +21,8 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 const theme = createTheme();
 
+const client = new w3cwebsocket(`ws://localhost:8000/ws/chat/someroot/`)
+
 export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
@@ -28,8 +30,6 @@ export default function App() {
   const [value, setValue] = useState('');
   const [messages, setMessages] = useState([]);
   const [username, setUsername] = useState('');
-
-
   
 
   const handleChattySubmit = () => {
@@ -37,17 +37,15 @@ export default function App() {
   }
 
   const handleStartChat = () => {
-    // client.send(JSON.stringify({
-    //   type: 'message',
-    //   message: value,
-    //   username: username,
-    // }));
+    client.send(JSON.stringify({
+      type: 'message',
+      message: value,
+      username: username,
+    }));
     setValue('');
   }
 
   useEffect(() => {
-    const client = new w3cwebsocket(`ws://127.0.0.1:8000/ws/chat/someroot/`)
-    console.log('proba')
     client.onopen = () => {
       console.log('WebSocket Client Connected');
     };
@@ -59,14 +57,15 @@ export default function App() {
       setMessages([
         ...messages,
         {
+          key: messages.length,
           msg: dataFromServer.message,
           user: dataFromServer.username,
         }
       ])
     }
-  }, [])
+  })
 
-  // console.log(messages)
+  console.log(messages.length)
 
   return (
     <ThemeProvider theme={theme}>
@@ -116,6 +115,7 @@ export default function App() {
                   name='username'
                   label='Username'
                   id='username'
+                  autoComplete='name'
                   onChange={e => setUsername(e.target.value)}
                 // autoComplete='username'
                 />
@@ -140,7 +140,9 @@ export default function App() {
                 label='Paper'
               >
                 {messages.map(message => 
-                    <Card>
+                    <Card
+                      key={message.key}
+                    >
                       <CardHeader
                         title={message.name}
                         subheader={message.msg}
