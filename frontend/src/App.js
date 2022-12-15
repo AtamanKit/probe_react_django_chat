@@ -30,21 +30,24 @@ export default function App() {
   const [username, setUsername] = useState('');
 
 
-  const client = new w3cwebsocket(`ws://127.0.0.1:8000/ws/chat/someroot/`)
+  
 
   const handleChattySubmit = () => {
     setIsLoggedIn(true);
   }
 
   const handleStartChat = () => {
-    client.send(JSON.stringify({
-      type: 'message',
-      message: value,
-      username: username,
-    }))
+    // client.send(JSON.stringify({
+    //   type: 'message',
+    //   message: value,
+    //   username: username,
+    // }));
+    setValue('');
   }
 
   useEffect(() => {
+    const client = new w3cwebsocket(`ws://127.0.0.1:8000/ws/chat/someroot/`)
+    console.log('proba')
     client.onopen = () => {
       console.log('WebSocket Client Connected');
     };
@@ -61,7 +64,9 @@ export default function App() {
         }
       ])
     }
-  })
+  }, [])
+
+  // console.log(messages)
 
   return (
     <ThemeProvider theme={theme}>
@@ -133,14 +138,25 @@ export default function App() {
                   // border:'1px solid lightgray'
                 }}
                 label='Paper'
-              />
+              >
+                {messages.map(message => 
+                    <Card>
+                      <CardHeader
+                        title={message.name}
+                        subheader={message.msg}
+                      />
+                    </Card>
+                )}
+              </Paper>
               <TextareaAutosize
+                autoFocus
                 style={{
                   border: '1px solid lightgray',
                   margin: '1em 0 1em 0',
                   // height: 50,
                 }}
                 onChange={e => setValue(e.target.value)}
+                value={value}
               />
               <Button
                 type='submit'
